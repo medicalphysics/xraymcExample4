@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(xraymcExample3 VERSION 0.0.1 DESCRIPTION "xraymc example 4" LANGUAGES CXX)
+project(xraymcExample4 VERSION 0.0.1 DESCRIPTION "xraymc example 4" LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,7 +28,8 @@ FetchContent_MakeAvailable(libxraymc)
 
 # Create an executable application
 add_executable(xraymcexample4
-	src/main.cpp    
+	src/main.cpp   
+    include/hollowsphere.hpp 
 )
 
 target_include_directories(xraymcexample4 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
