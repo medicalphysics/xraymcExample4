@@ -119,7 +119,7 @@ void runSimulation()
 
     // 128 independent exposures each run on a separate thread; total histories = 128 × 1e6.
     beam.setNumberOfExposures(128);
-    beam.setNumberOfParticlesPerExposure(1E3);
+    beam.setNumberOfParticlesPerExposure(1E6);
 
     // DAP = 1 mGy·cm² normalises output so reported dose values are per unit DAP.
     beam.setDAPvalue(1);

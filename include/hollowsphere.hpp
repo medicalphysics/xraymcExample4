@@ -2,7 +2,7 @@
 
 #pragma once // Include guard
 
-// Include the xraumc library
+// Include the xraymc library
 #include "xraymc/xraymc.hpp"
 
 /**
@@ -136,6 +136,8 @@ public:
      *
      * Calls intersect() and additionally calculates the outward surface normal at the
      * hit point, required by renderers to shade the geometry correctly.
+     * This method is not neccesary for Monte Carlo transport but allows the object
+     * to be visualized by the internal scene renderer in xraymc.
      *
      * @tparam U Current item type used by the visualization backend.
      * @param p Particle satisfying the xraymc::ParticleType concept.
@@ -154,6 +156,7 @@ public:
             // Works for both the outer and inner surfaces since both are centred at m_origin.
             auto hit_pos = xraymc::vectormath::add(p.pos, xraymc::vectormath::scale(p.dir, res.intersection));
             vintersect.normal = xraymc::vectormath::normalized(xraymc::vectormath::subtract(hit_pos, m_origin));
+            vintersect.value = m_doseScored.dose();
             vintersect.intersectionValid = true;
         }
         return vintersect;
