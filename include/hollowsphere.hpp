@@ -2,9 +2,8 @@
 
 #pragma once // Include guard
 
+// Include the xraumc library
 #include "xraymc/xraymc.hpp"
-
-#include <array>
 
 /**
  * @brief A hollow sphere geometry for Monte Carlo X-ray transport simulation.
@@ -165,7 +164,7 @@ public:
      * @param index Tally index (currently unused; the sphere has a single scorer).
      * @return Const reference to the EnergyScore accumulator.
      */
-    const xraymc::EnergyScore& energyScored(std::uint64_t index) const
+    const xraymc::EnergyScore& energyScored(std::uint64_t index = 0) const
     {
         return m_energyScored;
     }
@@ -175,7 +174,7 @@ public:
      * @param index Tally index (currently unused; the sphere has a single scorer).
      * @return Const reference to the DoseScore accumulator.
      */
-    const xraymc::DoseScore& doseScored(std::uint64_t index) const
+    const xraymc::DoseScore& doseScored(std::uint64_t index = 0) const
     {
         return m_doseScored;
     }
@@ -198,10 +197,10 @@ public:
      * Computes the shell volume from the outer and inner radii, then calls
      * DoseScore::addScoredEnergy with the wall material density.
      *
-     * @param factor Unit conversion factor (e.g. keV/g -> mGy scaling). 
+     * @param factor Unit conversion factor (e.g. keV/g -> mGy scaling).
      */
     void addEnergyScoredToDoseScore(double factor)
-    { 
+    {
         // Shell volume = (4π/3)(R³ − r³), where R is the outer radius and r = R − thickness is the inner radius.
         // This is simply the volume of the full outer sphere minus the hollow interior.
         const double R3 = m_radius * m_radius * m_radius;
