@@ -137,7 +137,7 @@ public:
      * Calls intersect() and additionally calculates the outward surface normal at the
      * hit point, required by renderers to shade the geometry correctly.
      *
-     * @tparam U Colour or material type used by the visualization backend.
+     * @tparam U Current item type used by the visualization backend.
      * @param p Particle satisfying the xraymc::ParticleType concept.
      * @return VisualizationIntersectionResult containing distance, inside flag, and normal.
      */
@@ -246,13 +246,13 @@ public:
                     intersection = intersect(p);
                 } else {
                     // Photoelectric absorption: particle is gone, stop the loop.
-                    intersection.intersectionValid = false;
+                    intersection.rayOriginIsInsideItem = false;
                 }
             } else {
                 // Free path exceeds the distance to the boundary: move the particle exactly to the
                 // surface (border_translate applies a small push to avoid floating-point re-entry).
                 p.border_translate(intersection.intersection);
-                intersection.intersectionValid = false;
+                intersection.rayOriginIsInsideItem = false;
             }
         }
     }
