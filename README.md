@@ -31,6 +31,7 @@ This example implements a **HollowSphere** class that serves as a custom world o
   | `center()` | Return the world-space centre as `array<double,3>`. |
   | `AABB()` | Return the axis-aligned bounding box as `array<double,6>` — `[xmin, ymin, zmin, xmax, ymax, zmax]`. |
   | `intersect(p)` | Compute the next ray–geometry intersection for particle `p`; returns a `WorldIntersectionResult` with the distance and a flag indicating whether the particle origin is inside the material. |
+  | `intersectVisualization(p)` | Compute the next ray–geometry intersection for particle `p`; returns a templated `VisualizationIntersectionResult` with the distance and a flag indicating whether the particle origin is inside the material and surface normal vector. This method is not neccesary for Monte Carlo transport but allows the object to be visualized by the internal scene renderer in xraymc. |
   | `energyScored(index)` | Return the `EnergyScore` accumulator at the given tally index. |
   | `doseScored(index)` | Return the `DoseScore` accumulator at the given tally index. |
   | `clearEnergyScored()` | Reset all energy-score accumulators to zero. |
