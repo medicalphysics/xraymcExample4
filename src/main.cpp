@@ -118,7 +118,7 @@ void runSimulation()
     beam.setDirectionCosines({ 1, 0, 0 }, { 0, 1, 0 }); // Row = +X, column = +Y; beam central ray points in +Z (towards the sphere)
 
     // 128 independent exposures each run on a separate thread; total histories = 128 × 1e6.
-    beam.setNumberOfExposures(128);
+    beam.setNumberOfExposures(36);
     beam.setNumberOfParticlesPerExposure(1E6);
 
     // DAP = 1 mGy·cm² normalises output so reported dose values are per unit DAP.
@@ -141,8 +141,12 @@ void runSimulation()
         std::cout << "Dose to hollow sphere wall: " << doseScored.dose();
         std::cout << " (" << doseScored.standardDeviation();
         std::cout << ") mGy/mGycm2 (uncertainty)\n";
-        std::cout << "Number of events in sphere wall (photoelectric, coherent and Compton): ";
+        std::cout << "Total number of energy events in sphere wall (photoelectric and Compton): ";
         std::cout << doseScored.numberOfEvents() << std::endl;
+        std::cout << "Photoelectric: " << sphere->numberOfPhotoelectricEvents() << '\n';
+        std::cout << "Compton: " << sphere->numberOfIncoherentEvents() << '\n';
+        std::cout << "Rayleigh: " << sphere->numberOfCoherentEvents() << '\n';
+        std::cout << std::flush;
     }
 }
 

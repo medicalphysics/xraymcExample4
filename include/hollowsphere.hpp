@@ -194,6 +194,24 @@ public:
         m_doseScored.clear();
     }
 
+    /// @brief Returns the total number of photoelectric interactions scored in the sphere wall.
+    std::uint64_t numberOfPhotoelectricEvents() const
+    {
+        return m_Nphotoelectric;
+    }
+
+    /// @brief Returns the total number of coherent (Rayleigh) scattering interactions scored in the sphere wall.
+    std::uint64_t numberOfCoherentEvents() const
+    {
+        return m_Ncoherent;
+    }
+
+    /// @brief Returns the total number of incoherent (Compton) scattering interactions scored in the sphere wall.
+    std::uint64_t numberOfIncoherentEvents() const
+    {
+        return m_Nincoherent;
+    }
+
     /**
      * @brief Converts accumulated energy to dose and adds it to the dose scorer.
      *
@@ -229,6 +247,8 @@ public:
         // rayOriginIsInsideItem == true signals that the particle is inside the concrete wall
         // and must be stepped; false means it is in a void region or has left the object.
 
+        // We also score number of photoelectric, coherent and incoherent events
+
         xraymc::WorldIntersectionResult intersection = intersect(p);
         while (intersection.rayOriginIsInsideItem) {
             // Sample a free path from the exponential distribution using the inverse-CDF method:
@@ -243,6 +263,8 @@ public:
                 xraymc::interactions::InteractionResult res = xraymc::interactions::interact(attenuation, p, m_material, state);
                 // Accumulate kinetic energy transferred to the medium (kerma proxy for dose scoring).
                 m_energyScored.scoreEnergy(res.energyImparted);
+                // Score number of events
+                scoreNumberOfEvents(res);
 
                 if (res.particleAlive) {
                     // Scatter changed direction and/or energy; recompute the next boundary distance.
@@ -260,11 +282,36 @@ public:
         }
     }
 
+protected:
+    /// @brief Increments interaction event counters based on the result of a photon interaction.
+    /// @param interactionResult Result of the interaction, indicating which process occurred.
+    void scoreNumberOfEvents(const xraymc::interactions::InteractionResult& interactionResult)
+    {
+        // atomic_ref wraps non-atomic members for thread-safe increments across parallel histories
+        // relaxed ordering is sufficient since counters are only read after all threads complete
+        if (interactionResult.interactionWasPhotoelectric) {
+            auto aref = std::atomic_ref(m_Nphotoelectric);
+            aref.fetch_add(std::uint64_t { 1 }, std::memory_order_relaxed);
+        }
+
+        if (interactionResult.interactionWasCoherent) {
+            auto aref = std::atomic_ref(m_Ncoherent);
+            aref.fetch_add(std::uint64_t { 1 }, std::memory_order_relaxed);
+        }
+        if (interactionResult.interactionWasIncoherent) {
+            auto aref = std::atomic_ref(m_Nincoherent);
+            aref.fetch_add(std::uint64_t { 1 }, std::memory_order_relaxed);
+        }
+    }
+
 private:
     std::array<double, 3> m_origin = { 0, 0, 0 };
     double m_radius = 7.0; // outer radius of the sphere in cm
     double m_thickness = 0.5; // wall thickness in cm
     double m_density = 1.0;
+    std::uint64_t m_Nphotoelectric = 0;
+    std::uint64_t m_Ncoherent = 0;
+    std::uint64_t m_Nincoherent = 0;
     xraymc::Material<> m_material;
     xraymc::EnergyScore m_energyScored;
     xraymc::DoseScore m_doseScored;
